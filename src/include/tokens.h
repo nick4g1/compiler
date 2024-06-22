@@ -1,40 +1,39 @@
 typedef enum {
 	SEMI,
-	OPEN_PAREN,
-	CLOSE_PAREN,
+  OPEN_PAREN,
+  CLOSE_PAREN,
 } TypeSeparator;
 
 typedef enum {
-	ADD,
-	SUB,
-	MUL,
-	DIV,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
 } TypeOperator;
 
-
 typedef enum {
-	INT,
+  INT,
 } TypeLiteral;
 
 typedef enum {
-	EXIT,
+  EXIT,
 } TypeKeyword;
 
 typedef struct {
-	TypeLiteral type;
-	int value;
+  TypeLiteral type;
+  int value;
 } TokenLiteral;
 
 typedef struct {
-	TypeKeyword type;
-	char* word;
+  TypeKeyword type;
+  char *word;
 } TokenKeyword;
 
 typedef struct {
-	TypeSeparator type;
+  TypeSeparator type;
 } TokenSeparator;
 
 typedef struct {
-	TypeOperator type;
-	char op;
+  TypeOperator type;
+  char op;
 } TokenOperator;

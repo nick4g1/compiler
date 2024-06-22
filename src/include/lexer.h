@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include "tokens.h"
 
 void lexer(FILE *input, FILE *output);
 
-int numberToken(char current, FILE *input);
+TokenLiteral *numberToken(char current, FILE *input);
+TokenKeyword *keywordToken(char current, FILE *input);
