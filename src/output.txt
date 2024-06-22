@@ -1,5 +1,0 @@
-Keyword found: exit
-Open Paren found
-Number found: 100
-Close Paren found
-Semi found

@@ -1,5 +1,4 @@
 #include "include/lexer.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,8 +26,10 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  lexer(input, output);
-  fclose(input);
+  Token *tokens = lexer(input);
+  for (int i = 0; tokens[0].value[i]; i++) {
+    printf("%c\n", tokens[0].value[i]);
+  }
   fclose(output);
   return 0;
 }

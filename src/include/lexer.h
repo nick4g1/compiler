@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include "tokens.h"
 
-void lexer(FILE *input, FILE *output);
+Token *lexer(FILE *input);
 
-TokenLiteral *numberToken(char current, FILE *input);
-TokenKeyword *keywordToken(char current, FILE *input);
+Token *numberToken(int *currentIndex, char *currentBuffer);
+Token *keywordToken(int *currentIndex, char *currentBuffer);
+Token *separatorToken(int *currentIndex, char *currentBuffer);
+void printToken(Token t);
