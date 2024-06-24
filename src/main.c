@@ -27,8 +27,11 @@ int main(int argc, char **argv) {
   }
 
   Token *tokens = lexer(input);
-  for (int i = 0; tokens[0].value[i]; i++) {
-    printf("%c\n", tokens[0].value[i]);
+  for (int i = 0; tokens[i].type != END_OF_TOKENS; i++){
+    for (int j = 0; tokens[i].value[j]; j++) {
+      printf("%c", tokens[i].value[j]);
+    }
+    printf("\n");
   }
   fclose(output);
   return 0;

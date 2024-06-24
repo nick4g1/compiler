@@ -50,24 +50,18 @@ Token *separatorToken(int *currentIndex, char *currentBuffer) {
   token->value[0] = currentBuffer[*currentIndex];
   *currentIndex += 1;
   token->value[1] = '\0';
+  token->type = SEPARATOR;
   return token;
 }
-
-// Prints a token
-void printToken(Token t) {
-  for (int i = 0; t.value[i] != '\0'; i++) {
-    printf("%c", t.value[i]);
-  }
-  printf("\n");
-  if (t.type == INT) {
-    printf("TOKEN TYPE INT\n");
-  }
-  if (t.type == SEPARATOR) {
-    printf("TOKEN TYPE SEPARATOR\n");
-  }
-  if (t.type == KEYWORD) {
-    printf("TOKEN TYPE KEYWORD\n");
-  }
+// Finds an operator token
+Token *operatorToken(int *currentIndex, char *currentBuffer) {
+  Token *token = malloc(sizeof(Token));
+  token->value = malloc(sizeof(char) * 2);
+  token->value[0] = currentBuffer[*currentIndex];
+  *currentIndex += 1;
+  token->value[1] = '\0';
+  token->type = OPERATOR;
+  return token;
 }
 
 size_t tokenIndex;
@@ -82,31 +76,41 @@ Token *lexer(FILE *input) {
   fread(buffer, 1, length, input);
   fclose(input);
   buffer[length + 1] = '\0';
-  char *currentBuffer = malloc(length + 1);
   int currentIndex = 0;
 
   Token *tokens = malloc(sizeof(Token) * 20);
   tokenIndex = 0;
-  char current = currentBuffer[currentIndex];
-  // loops thru each character in the buffer
+  char current = buffer[currentIndex];
+  // Loop through each character in input file until end of file
   while (current != '\0') {
     Token *token = malloc(sizeof(Token));
     if (isdigit(current)) {
-      token = numberToken(&currentIndex, currentBuffer);
-      tokens[tokenIndex++] = *token;
+      token = numberToken(&currentIndex, buffer);
+      tokens[tokenIndex] = *token;
+      tokenIndex++;
       currentIndex--;
     } else if ((current >= 'a' && current <= 'z') ||
                (current >= 'A' && current <= 'Z')) {
-      token = keywordToken(&currentIndex, currentBuffer);
-      tokens[tokenIndex++] = *token;
+      token = keywordToken(&currentIndex, buffer);
+      tokens[tokenIndex] = *token;
+      tokenIndex++;
       currentIndex--;
     } else if (current == '(' || current == ')' || current == ';') {
-      token = separatorToken(&currentIndex, currentBuffer);
-      tokens[tokenIndex++] = *token;
+      token = separatorToken(&currentIndex, buffer);
+      tokens[tokenIndex] = *token;
+      tokenIndex++;
+      currentIndex--;
+    }
+    else if (current == '+' || current == '-' || current == '/' || current == '*') {
+      token = operatorToken(&currentIndex, buffer);
+      tokens[tokenIndex] = *token;
+      tokenIndex++;
       currentIndex--;
     }
     currentIndex++;
-    current = currentBuffer[currentIndex];
+    current = buffer[currentIndex];
   }
+  tokens[tokenIndex].value = NULL;
+  tokens[tokenIndex].type = END_OF_TOKENS;
   return tokens;
 }

@@ -1,2 +1,3 @@
-gcc main.c lexer.c -o main -Wall -Wextra
+gcc -o main main.c lexer.c -Wall -Wextra
 ./main test.txt output.txt
+
