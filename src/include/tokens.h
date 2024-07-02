@@ -1,3 +1,5 @@
+#ifndef TOKEN
+#define TOKEN
 typedef enum {
   INT,
   SEPARATOR,
@@ -9,3 +11,4 @@ typedef struct {
   TokenType type;
   char *value;
 } Token;
+#endif

@@ -1,3 +1,3 @@
-gcc -o main main.c lexer.c -Wall -Wextra
-./main test.txt output.txt
+gcc -o main main.c lexer.c parser.c -Wall -Wextra
+./main input.txt output.txt
 

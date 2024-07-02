@@ -1,4 +1,6 @@
 #include "include/lexer.h"
+#include "include/tokens.h"
+#include "include/tree.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,11 +30,11 @@ int main(int argc, char **argv) {
 
   Token *tokens = lexer(input);
   for (int i = 0; tokens[i].type != END_OF_TOKENS; i++){
-    for (int j = 0; tokens[i].value[j]; j++) {
-      printf("%c", tokens[i].value[j]);
-    }
-    printf("\n");
+      printf(" Token: %s", tokens[i].value);
   }
+  printf("\n");
+  Node *head = parse(tokens);
+
   fclose(output);
   return 0;
 }

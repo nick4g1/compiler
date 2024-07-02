@@ -1,4 +1,5 @@
 #include "include/lexer.h"
+#include "include/tokens.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
