@@ -5,11 +5,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+Token *initToken(TokenType type, char *value) {
+  Token *token = malloc(sizeof(Token));
+  token->type = type;
+  token->value = malloc(strlen(value) + 1);
+  strncpy(token->value, value, strlen(value) + 1);
+  return token;
+}
+
+void destroyTokens(Token **tokens) {
+  for (int i = 0; tokens[i]->type != END_OF_TOKENS; i++){
+    free(tokens[i]->value);
+    free(tokens[i]);
+  }
+  free(tokens);
+}
+
 // Finds a number token
 Token *numberToken(int *currentIndex, char *currentBuffer) {
-  Token *token = malloc(sizeof(Token));
-  token->type = INT;
-  char *value = malloc(sizeof(char) * 8);
+  char value[8];
   int valueIndex = 0;
   while (isdigit(currentBuffer[*currentIndex]) &&
          currentBuffer[*currentIndex] != EOF) {
@@ -20,14 +34,13 @@ Token *numberToken(int *currentIndex, char *currentBuffer) {
     *currentIndex += 1;
   }
   value[valueIndex] = '\0';
-  token->value = value;
+  Token *token = initToken(INT, value);
   return token;
 }
 
 // Finds a keyword token
 Token *keywordToken(int *currentIndex, char *currentBuffer) {
-  Token *token = malloc(sizeof(Token));
-  char *value = malloc(sizeof(char) * 20);
+  char value[20];
   int valueIndex = 0;
   while (((currentBuffer[*currentIndex] >= 'a' && currentBuffer[*currentIndex] <= 'z') ||
           (currentBuffer[*currentIndex] >= 'A' && currentBuffer[*currentIndex] <= 'Z')) &&
@@ -36,10 +49,9 @@ Token *keywordToken(int *currentIndex, char *currentBuffer) {
     *currentIndex += 1;
   }
   value[valueIndex] = '\0';
-  token->value = value;
+  Token *token;
   if (strcmp(value, "exit")) {
-    token->type = KEYWORD;
-    token->value = "EXIT";
+    token = initToken(KEYWORD, "EXIT");
   }
   return token;
 }
@@ -84,7 +96,7 @@ Token *lexer(FILE *input) {
   char current = buffer[currentIndex];
   // Loop through each character in input file until end of file
   while (current != '\0') {
-    Token *token = malloc(sizeof(Token));
+    Token *token;
     if (isdigit(current)) {
       token = numberToken(&currentIndex, buffer);
       tokens[tokenIndex] = *token;

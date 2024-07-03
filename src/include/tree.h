@@ -20,4 +20,6 @@ typedef struct Node{
 
 Node *parse(Token *tokens);
 Node *initNode(NodeType type, char* value);
+void destroyTree(Node *root);
+void destroyNode(Node *root);
 #endif

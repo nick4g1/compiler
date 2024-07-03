@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
   }
   printf("\n");
   Node *head = parse(tokens);
+  destroyTree(head);
 
   fclose(output);
   return 0;
