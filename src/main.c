@@ -33,7 +33,8 @@ int main(int argc, char **argv) {
       printf(" Token: %s", tokens[i].value);
   }
   printf("\n");
-  Node *head = parse(tokens);
+  struct Node *head = parse(tokens);
+  printTree(head, 0);
   destroyTree(head);
 
   fclose(output);

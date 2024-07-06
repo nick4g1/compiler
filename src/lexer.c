@@ -73,7 +73,24 @@ Token *operatorToken(int *currentIndex, char *currentBuffer) {
   token->value[0] = currentBuffer[*currentIndex];
   *currentIndex += 1;
   token->value[1] = '\0';
-  token->type = OPERATOR;
+  switch (token->value[0]) {
+    case '+':
+      token->type = ADD_OP;
+      break;
+    case '-':
+      token->type = SUB_OP;
+      break;
+    case '*':
+      token->type = MUL_OP;
+      break;
+    case '/':
+      token->type = DIV_OP;
+      break;
+    default:
+      printf("Error in operatorToken\n");
+      exit(1);
+      break;
+  }
   return token;
 }
 

@@ -1,25 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "tokens.h"
 #ifndef NODE
 #define NODE
 typedef enum {
-  START,
-  EXPR_ADD,
-  EXPR_SUB,
-  EXPR_MUL,
-  EXPR_DIV,
-  LITERAL,
+  EXPR_ADD = 1,
+  EXPR_SUB = 2,
+  EXPR_MUL = 3,
+  EXPR_DIV = 4,
+  LITERAL = 0,
 } NodeType;
 
 
 typedef struct Node{
-  char* value;
-  NodeType type;
+  int value;
+  NodeType op;
   struct Node *left;
   struct Node *right;
 }Node;
 
-Node *parse(Token *tokens);
-Node *initNode(NodeType type, char* value);
-void destroyTree(Node *root);
-void destroyNode(Node *root);
+struct Node *parse(Token *tokens);
+struct Node *binExp(Token *tokens, int prec);
+struct Node *initNode(int op, struct Node *left, struct Node *right, int value);
+void printTree(struct Node *root, int space);
+void destroyTree(struct Node *root);
+void destroyNode(struct Node *root);
 #endif
