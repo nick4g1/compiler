@@ -6,7 +6,7 @@
 #include <string.h>
 #define COUNT 5
 
-static int OpPrec[] = {0, 10, 10, 20, 20};
+static int OpPrec[] = {0, 10, 10, 20, 20, 10, 10};
 
 int opPrecedence(int type) {
   int prec = OpPrec[type];
@@ -17,8 +17,8 @@ int opPrecedence(int type) {
   return prec;
 }
 
-struct Node *initNode(int op, struct Node *left, struct Node *right,
-                      int value) {
+struct Node *initNode(NodeType type, struct Node *left, struct Node *right,
+                      char *value) {
   struct Node *n;
 
   n = (struct Node *)malloc(sizeof(struct Node));
@@ -28,8 +28,9 @@ struct Node *initNode(int op, struct Node *left, struct Node *right,
   }
   n->left = left;
   n->right = right;
-  n->value = value;
-  n->op = op;
+  n->value = (char *)malloc(strlen(value) + 1);
+  strncpy(n->value, value, strlen(value) + 1);
+  n->op = type;
   return n;
 }
 void printTree(struct Node *root, int space) {
@@ -54,7 +55,7 @@ void printTree(struct Node *root, int space) {
     printf("/\n");
     break;
   default:
-    printf("%d\n", root->value);
+    printf("%s\n", root->value);
     break;
   }
   printTree(root->left, space);
@@ -71,15 +72,31 @@ void destroyTree(struct Node *root) {
 void destroyNode(struct Node *node) {
   node->left = NULL;
   node->right = NULL;
+  free(node->value);
   free(node);
 }
 
 size_t tokIndex;
 struct Node *literal(Token *tokens) {
   struct Node *n;
-  n = initNode(0, NULL, NULL, atoi(tokens[tokIndex].value));
+  n = initNode(LITERAL, NULL, NULL, tokens[tokIndex].value);
   tokIndex++;
   return n;
+}
+
+struct Node *condition(Token *tokens) {
+  struct Node *root;
+  if (tokens[tokIndex].type == IF_COND) {
+    root = initNode(IF, NULL, NULL, tokens[tokIndex].value);
+  }
+  tokIndex++;
+  // consume open paren
+  if (tokens[tokIndex].type != OPEN_PAREN) {
+    printf("Need OPEN_PAREN after if\n");
+    exit(1);
+  }
+  tokIndex++;
+  return root;
 }
 
 int findOp(TokenType type) {
@@ -92,9 +109,38 @@ int findOp(TokenType type) {
     return 3;
   case DIV_OP:
     return 4;
+  case LESS_THAN_OP:
+    return 6;
+  case GREATER_THAN_OP:
+    return 5;
   default:
     return 0;
   }
+}
+
+struct Node *conditionalExp(Token *tokens) {
+  struct Node *root, *left, *right;
+  root = condition(tokens);
+  left = binExp(tokens, 0);
+  // Consume CLOSE_PAREN
+  if (tokens[tokIndex].type != CLOSE_PAREN) {
+    printf("Need CLOSE_PAREN after condition\n");
+    exit(1);
+  }
+  tokIndex++;
+  //if (tokens[tokIndex].type != OPEN_BRACE) {
+  //  printf("Need OPEN_BRACE after IF statement\n");
+  //  exit(1);
+  //}
+  //tokIndex++;
+  right = binExp(tokens, 0);
+  //if (tokens[tokIndex].type != CLOSE_BRACE) {
+  //  printf("Need CLOSE_BRACE to close IF statement\n");
+  //  exit(1);
+  //}
+  root->left = left;
+  root->right = right;
+  return root;
 }
 
 struct Node *binExp(Token *tokens, int prec) {
@@ -103,14 +149,16 @@ struct Node *binExp(Token *tokens, int prec) {
   left = literal(tokens);
 
   TokenType type = tokens[tokIndex].type;
-  if (type == END_OF_TOKENS)
+  char *value = tokens[tokIndex].value;
+  if (type == END_OF_TOKENS || type == CLOSE_PAREN || type == SEMI) {
     return left;
+  }
   while (opPrecedence(type) > prec) {
     tokIndex++;
     right = binExp(tokens, opPrecedence(type));
-    left = initNode(findOp(type), left, right, 0);
+    left = initNode(findOp(type), left, right, value);
     type = tokens[tokIndex].type;
-    if (type == END_OF_TOKENS)
+    if (type == END_OF_TOKENS || type == CLOSE_PAREN || type == SEMI)
       return left;
   }
   return left;
@@ -118,6 +166,5 @@ struct Node *binExp(Token *tokens, int prec) {
 
 struct Node *parse(Token *tokens) {
   tokIndex = 0;
-  return binExp(tokens, 0);
+  return conditionalExp(tokens);
 }
-

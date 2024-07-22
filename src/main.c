@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
   Token *tokens = lexer(input);
   for (int i = 0; tokens[i].type != END_OF_TOKENS; i++){
-      printf(" Token: %s", tokens[i].value);
+      printf("%s", tokens[i].value);
   }
   printf("\n");
   struct Node *head = parse(tokens);

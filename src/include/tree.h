@@ -9,11 +9,17 @@ typedef enum {
   EXPR_MUL = 3,
   EXPR_DIV = 4,
   LITERAL = 0,
+  GREATER_THAN = 5,
+  LESS_THAN = 6,
+  GREATER_EQ,
+  LESS_EQ,
+  EQ,
+  IF,
 } NodeType;
 
 
 typedef struct Node{
-  int value;
+  char* value;
   NodeType op;
   struct Node *left;
   struct Node *right;
@@ -21,7 +27,7 @@ typedef struct Node{
 
 struct Node *parse(Token *tokens);
 struct Node *binExp(Token *tokens, int prec);
-struct Node *initNode(int op, struct Node *left, struct Node *right, int value);
+struct Node *initNode(NodeType type, struct Node *left, struct Node *right, char* value);
 void printTree(struct Node *root, int space);
 void destroyTree(struct Node *root);
 void destroyNode(struct Node *root);

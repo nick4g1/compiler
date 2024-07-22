@@ -14,7 +14,7 @@ Token *initToken(TokenType type, char *value) {
 }
 
 void destroyTokens(Token **tokens) {
-  for (int i = 0; tokens[i]->type != END_OF_TOKENS; i++){
+  for (int i = 0; tokens[i]->type != END_OF_TOKENS; i++) {
     free(tokens[i]->value);
     free(tokens[i]);
   }
@@ -34,7 +34,7 @@ Token *numberToken(int *currentIndex, char *currentBuffer) {
     *currentIndex += 1;
   }
   value[valueIndex] = '\0';
-  Token *token = initToken(INT, value);
+  Token *token = initToken(INT_CONST, value);
   return token;
 }
 
@@ -42,16 +42,24 @@ Token *numberToken(int *currentIndex, char *currentBuffer) {
 Token *keywordToken(int *currentIndex, char *currentBuffer) {
   char value[20];
   int valueIndex = 0;
-  while (((currentBuffer[*currentIndex] >= 'a' && currentBuffer[*currentIndex] <= 'z') ||
-          (currentBuffer[*currentIndex] >= 'A' && currentBuffer[*currentIndex] <= 'Z')) &&
+  while (((currentBuffer[*currentIndex] >= 'a' &&
+           currentBuffer[*currentIndex] <= 'z') ||
+          (currentBuffer[*currentIndex] >= 'A' &&
+           currentBuffer[*currentIndex] <= 'Z')) &&
          currentBuffer[*currentIndex] != EOF) {
     value[valueIndex++] = currentBuffer[*currentIndex];
     *currentIndex += 1;
   }
   value[valueIndex] = '\0';
   Token *token;
-  if (strcmp(value, "exit")) {
-    token = initToken(KEYWORD, "EXIT");
+  if (strcmp(value, "int") == 0) {
+    token = initToken(INT_KEYWORD, "int");
+  }
+  else if (strcmp(value, "return") == 0) {
+    token = initToken(RETURN_KEYW0RD, "return");
+  }
+  else {
+    token = initToken(IF_COND, value);
   }
   return token;
 }
@@ -63,7 +71,27 @@ Token *separatorToken(int *currentIndex, char *currentBuffer) {
   token->value[0] = currentBuffer[*currentIndex];
   *currentIndex += 1;
   token->value[1] = '\0';
-  token->type = SEPARATOR;
+  switch (token->value[0]) {
+  case ';':
+    token->type = SEMI;
+    break;
+  case '(':
+    token->type = OPEN_PAREN;
+    break;
+  case ')':
+    token->type = CLOSE_PAREN;
+    break;
+  case '{':
+    token->type = OPEN_BRACE;
+    break;
+  case '}':
+    token->type = CLOSE_BRACE;
+    break;
+  default:
+    printf("Error in separator token\n");
+    exit(1);
+    break;
+  }
   return token;
 }
 // Finds an operator token
@@ -74,22 +102,28 @@ Token *operatorToken(int *currentIndex, char *currentBuffer) {
   *currentIndex += 1;
   token->value[1] = '\0';
   switch (token->value[0]) {
-    case '+':
-      token->type = ADD_OP;
-      break;
-    case '-':
-      token->type = SUB_OP;
-      break;
-    case '*':
-      token->type = MUL_OP;
-      break;
-    case '/':
-      token->type = DIV_OP;
-      break;
-    default:
-      printf("Error in operatorToken\n");
-      exit(1);
-      break;
+  case '+':
+    token->type = ADD_OP;
+    break;
+  case '-':
+    token->type = SUB_OP;
+    break;
+  case '*':
+    token->type = MUL_OP;
+    break;
+  case '/':
+    token->type = DIV_OP;
+    break;
+  case '>':
+    token->type = GREATER_THAN_OP;
+    break;
+  case '<':
+    token->type = LESS_THAN_OP;
+    break;
+  default:
+    printf("Error in operatorToken\n");
+    exit(1);
+    break;
   }
   return token;
 }
@@ -125,13 +159,14 @@ Token *lexer(FILE *input) {
       tokens[tokenIndex] = *token;
       tokenIndex++;
       currentIndex--;
-    } else if (current == '(' || current == ')' || current == ';') {
+    } else if (current == '(' || current == ')' || current == ';' ||
+               current == '{' || current == '}') {
       token = separatorToken(&currentIndex, buffer);
       tokens[tokenIndex] = *token;
       tokenIndex++;
       currentIndex--;
-    }
-    else if (current == '+' || current == '-' || current == '/' || current == '*') {
+    } else if (current == '+' || current == '-' || current == '/' ||
+               current == '*' || current == '<' || current == '>') {
       token = operatorToken(&currentIndex, buffer);
       tokens[tokenIndex] = *token;
       tokenIndex++;
