@@ -15,6 +15,10 @@ typedef enum {
   LESS_EQ,
   EQ,
   IF,
+  NAME,
+  RETURN_KW,
+  STATEMENT,
+  FUNCTION_DEF,
 } NodeType;
 
 

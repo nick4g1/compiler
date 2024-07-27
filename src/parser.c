@@ -37,7 +37,7 @@ void printTree(struct Node *root, int space) {
   if (root == NULL)
     return;
   space += COUNT;
-  printTree(root->right, space);
+  printTree(root->right, space + strlen(root->value));
   printf("\n");
   for (int i = COUNT; i < space; i++)
     printf(" ");
@@ -58,7 +58,7 @@ void printTree(struct Node *root, int space) {
     printf("%s\n", root->value);
     break;
   }
-  printTree(root->left, space);
+  printTree(root->left, space + strlen(root->value));
 }
 
 void destroyTree(struct Node *root) {
@@ -118,6 +118,38 @@ int findOp(TokenType type) {
   }
 }
 
+struct Node *returnKeyword(Token *tokens) {
+  struct Node *root, *left, *right;
+  if (tokens[tokIndex].type == RETURN_KEYW0RD) {
+    root = initNode(STATEMENT, NULL, NULL, "STATEMENT");
+  }
+  left = initNode(RETURN_KW, NULL, NULL, tokens[tokIndex].value);
+  tokIndex += 1;
+  // find thing to return
+  right = binExp(tokens, 0);
+  root->right = right;
+  root->left = left;
+  return root;
+}
+
+struct Node *functionDef(Token *tokens) {
+  struct Node *root ,*left;
+  if (tokens[tokIndex].type == FUNCTION_DEFINITION) {
+    root = initNode(FUNCTION_DEF, NULL, NULL, "FUNCTION_DEFINITION");
+  }
+  // get name of function on left
+  left = initNode(NAME, NULL, NULL, tokens[tokIndex].value);
+  tokIndex++;
+  // consume open paren
+  if (tokens[tokIndex].type != OPEN_PAREN) {
+    printf("Need OPEN_PAREN in function definition\n");
+    exit(1);
+  }
+  tokIndex++;
+  root->left = left;
+  return root;
+}
+
 struct Node *conditionalExp(Token *tokens) {
   struct Node *root, *left, *right;
   root = condition(tokens);
@@ -128,16 +160,16 @@ struct Node *conditionalExp(Token *tokens) {
     exit(1);
   }
   tokIndex++;
-  //if (tokens[tokIndex].type != OPEN_BRACE) {
-  //  printf("Need OPEN_BRACE after IF statement\n");
-  //  exit(1);
-  //}
-  //tokIndex++;
+  // if (tokens[tokIndex].type != OPEN_BRACE) {
+  //   printf("Need OPEN_BRACE after IF statement\n");
+  //   exit(1);
+  // }
+  // tokIndex++;
   right = binExp(tokens, 0);
-  //if (tokens[tokIndex].type != CLOSE_BRACE) {
-  //  printf("Need CLOSE_BRACE to close IF statement\n");
-  //  exit(1);
-  //}
+  // if (tokens[tokIndex].type != CLOSE_BRACE) {
+  //   printf("Need CLOSE_BRACE to close IF statement\n");
+  //   exit(1);
+  // }
   root->left = left;
   root->right = right;
   return root;
@@ -166,5 +198,18 @@ struct Node *binExp(Token *tokens, int prec) {
 
 struct Node *parse(Token *tokens) {
   tokIndex = 0;
-  return conditionalExp(tokens);
+  struct Node *root, *left, *right;
+  while (tokens[tokIndex].type != FUNCTION_DEFINITION &&
+         tokens[tokIndex].type != END_OF_TOKENS) {
+    tokIndex += 1;
+  }
+  if (tokens[tokIndex].type == FUNCTION_DEFINITION)
+    root = functionDef(tokens);
+  tokIndex += 1;
+  // Found function, now we find first statement
+  if (tokens[tokIndex].type == RETURN_KEYW0RD) {
+    right = returnKeyword(tokens);
+  }
+  root->right = right;
+  return root;
 }

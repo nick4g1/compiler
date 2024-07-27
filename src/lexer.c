@@ -58,6 +58,9 @@ Token *keywordToken(int *currentIndex, char *currentBuffer) {
   else if (strcmp(value, "return") == 0) {
     token = initToken(RETURN_KEYW0RD, "return");
   }
+  else if (strcmp(value, "main") == 0) {
+    token = initToken(FUNCTION_DEFINITION, "main");
+  }
   else {
     token = initToken(IF_COND, value);
   }
