@@ -1,7 +1,7 @@
+#include "include/codeGen.h"
 #include "include/lexer.h"
 #include "include/tokens.h"
 #include "include/tree.h"
-#include "include/codeGen.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,9 +31,9 @@ int main(int argc, char **argv) {
 
   Token *tokens = lexer(input);
   printf("\n\nTokens:\n");
-  for (int i = 0; tokens[i].type != END_OF_TOKENS; i++){
-      printf("%s", tokens[i].value);
-      printf(" -> ");
+  for (int i = 0; tokens[i].type != END_OF_TOKENS; i++) {
+    printf("%s", tokens[i].value);
+    printf(" -> ");
   }
   printf("END_OF_TOKENS");
   printf("\n");

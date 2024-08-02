@@ -1,6 +1,6 @@
+#include "tokens.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "tokens.h"
 #ifndef NODE
 #define NODE
 typedef enum {
@@ -21,17 +21,17 @@ typedef enum {
   FUNCTION_DEF,
 } NodeType;
 
-
-typedef struct Node{
-  char* value;
+typedef struct Node {
+  char *value;
   NodeType op;
   struct Node *left;
   struct Node *right;
-}Node;
+} Node;
 
 struct Node *parse(Token *tokens);
 struct Node *binExp(Token *tokens, int prec);
-struct Node *initNode(NodeType type, struct Node *left, struct Node *right, char* value);
+struct Node *initNode(NodeType type, struct Node *left, struct Node *right,
+                      char *value);
 void printTree(struct Node *root, int space);
 void destroyTree(struct Node *root);
 void destroyNode(struct Node *root);
